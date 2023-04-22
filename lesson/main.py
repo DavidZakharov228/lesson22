@@ -1,33 +1,52 @@
-from flask_login import LoginManager
+from flask import Flask, render_template, request, redirect, url_for
+from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret_key'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+USERS = {
+    'user1': {'password': 'password1'},
+    'user2': {'password': 'password2'}
+}
+
+class User(UserMixin):
+    pass
 
 @login_manager.user_loader
-def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+def user_loader(username):
+    if username not in USERS:
+        return
 
-
-class User(SqlAlchemyBase, UserMixin):
-    class LoginForm(FlaskForm):
-        email = EmailField('Почта', validators=[DataRequired()])
-        password = PasswordField('Пароль', validators=[DataRequired()])
-        remember_me = BooleanField('Запомнить меня')
-        submit = SubmitField('Войти')
-
+    user = User()
+    user.id = username
+    return user
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
-            return redirect("/")
-        return render_template('login.html',
-                               message="Неправильный логин или пароль",
-                               form=form)
-    return render_template('login.html', title='Авторизация', form=form)
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if username in USERS and password == USERS[username]['password']:
+            user = User()
+            user.id = username
+            login_user(user)
+            return redirect(url_for('index'))
+
+        return 'Invalid username or password'
+
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/')
+@login_required
+def index():
+    return 'Logged in as: ' + current_user.id
