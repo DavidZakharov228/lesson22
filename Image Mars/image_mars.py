@@ -27,5 +27,6 @@ def image_mars():
     return render_template('image_mars.html')
 
 
+
 if __name__ == '__main__':
     app.run(debug=True)
