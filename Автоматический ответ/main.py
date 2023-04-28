@@ -6,7 +6,7 @@ app = Flask(__name__)
 def index():
     return render_template('base.html')
 
-@app.route('/answer', methods=['POST'])
+@app.route('/answer', methods=['GET'])
 def answer():
     title = 'Анкета'
     surname = request.form['surname']
