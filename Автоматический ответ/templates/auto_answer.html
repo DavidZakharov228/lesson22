@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Auto Answer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h4 class="title">Автоответ на анкету</h4>
+    <p><strong>Фамилия:</strong> {{ surname }}</p>
+    <p><strong>Имя:</strong> {{ name }}</p>
+    <p><strong>Образование:</strong> {{ education }}</p>
+    <p><strong>Профессия:</strong> {{ profession }}</p>
+    <p><strong>Пол:</strong> {{ sex }}</p>
+    <p><strong>Мотивация:</strong> {{ motivation }}</p>
+    <p><strong>Готовность к работе:</strong> {{ ready }}</p>
+</body>
+</html>
