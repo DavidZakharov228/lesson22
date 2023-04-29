@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Форма доступа к системам корабля</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<style>
+		body {
+			background-image: url("https://yastatic.net/s3/lyceum/content/images/second-year/web/MARS-2-7.png");
+			background-repeat: no-repeat;
+			background-position: center;
+			background-size: 50%;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Доступ к системам корабля</h1>
+		<form method="POST">
+			<label for="id">ID астронавта:</label>
+			<input type="text" id="id" name="id"><br>
+
+			<label for="password">Пароль:</label>
+			<input type="password" id="password" name="password"><br>
+
+			<label for="captain-id">ID капитана или заместителя:</label>
+			<input type="text" id="captain-id" name="captain-id"><br>
+
+			<label for="token">Токен капитана или заместителя:</label>
+			<input type="password" id="token" name="token"><br>
+
+			<input type="submit" value="Войти">
+		</form>
+	</div>
+</body>
+</html>

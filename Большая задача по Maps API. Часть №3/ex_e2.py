@@ -1,71 +1,43 @@
-import os
 import sys
-
-import requests
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 
-SCREEN_SIZE = [600, 450]
-
-
-class Example(QWidget):
+class MapWidget(QWidget):
     def __init__(self):
-        print('Ведите координаты через пробел:')
-        self.cor = input()
-        if ',' in self.cor:
-            print('Координаты введены не верно')
-        print('Введите маштаб в %:')
-        print('Чем меньше число, тем больше охват карты')
-        self.mash = input()
-        self.check()
         super().__init__()
-        self.getImage()
+        self.width = 640
+        self.height = 480
+        self.center = [55.755826, 37.617299] # Координаты центра карты (Москва)
+        self.zoom = 10 # Масштаб карты
         self.initUI()
 
-    def check(self):
-        self.cor = ','.join(self.cor.split())
-        if 100 < float(self.mash):
-            self.prov = 1
-            print('Маштаб должен быть введен в диапазоне от 0 до 100!')
-        self.mash = round(0.17 * int(self.mash))
-        if self.mash < 0:
-            self.mash = 0
-        if self.mash > 17:
-            self.mash = 17
-
-    def getImage(self):
-        map_request = "http://static-maps.yandex.ru/1.x/?ll=" + self.cor + "&z=" + str(self.mash) + "&size=600,450&l=map"
-        response = requests.get(map_request)
-
-        if not response:
-            print('Координаты введены неверно!')
-            print("Ошибка выполнения запроса:")
-            print(map_request)
-            print("Http статус:", response.status_code, "(", response.reason, ")")
-            sys.exit(1)
-
-        # Запишем полученное изображение в файл.
-        self.map_file = "map.png"
-        with open(self.map_file, "wb") as file:
-            file.write(response.content)
-
     def initUI(self):
-        self.setGeometry(100, 100, *SCREEN_SIZE)
-        self.setWindowTitle('Отображение карты')
+        self.setGeometry(100, 100, self.width, self.height)
+        self.setWindowTitle('Map')
+        self.label = QLabel(self)
+        self.label.setGeometry(0, 0, self.width, self.height)
+        self.showMap()
 
-        ## Изображение
-        self.pixmap = QPixmap(self.map_file)
-        self.image = QLabel(self)
-        self.image.move(0, 0)
-        self.image.setPixmap(self.pixmap)
+    def showMap(self):
+        map_url = f"https://static-maps.yandex.ru/1.x/?ll={self.center[1]},{self.center[0]}&z={self.zoom}&size={self.width},{self.height}&l=map"
+        pixmap = QPixmap(map_url)
+        self.label.setPixmap(pixmap)
 
-    def closeEvent(self, event):
-        """При закрытии формы подчищаем за собой"""
-        os.remove(self.map_file)
-
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key == Qt.Key_Up:
+            self.center[0] = min(self.center[0] + 0.01 * (2 ** (15 - self.zoom)), 85)
+        elif key == Qt.Key_Down:
+            self.center[0] = max(self.center[0] - 0.01 * (2 ** (15 - self.zoom)), -85)
+        elif key == Qt.Key_Right:
+            self.center[1] = min(self.center[1] + 0.01 * (2 ** (15 - self.zoom)), 180)
+        elif key == Qt.Key_Left:
+            self.center[1] = max(self.center[1] - 0.01 * (2 ** (15 - self.zoom)), -180)
+        self.showMap()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example()
+    ex = MapWidget()
     ex.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec_())
