@@ -1,53 +1,42 @@
+import os
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
-from PyQt5.QtGui import QPixmap
+
 import requests
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+
+SCREEN_SIZE = [600, 450]
 
 
-class MapWindow(QWidget):
+class Example(QWidget):
     def __init__(self):
         super().__init__()
+        self.getImage()
+        self.initUI()
 
-        self.setWindowTitle('Map App')
-        self.setGeometry(100, 100, 800, 600)
+    def getImage(self):
+        map_request = "http://static-maps.yandex.ru/1.x/?ll=135.746989,-27.483765&spn=20,20&l=sat"
+        response = requests.get(map_request)
+        self.map_file = "map.png"
+        with open(self.map_file, "wb") as file:
+            file.write(response.content)
 
-        # Создаем поля ввода координат и масштаба
-        self.lat_edit = QLineEdit(self)
-        self.lat_edit.move(20, 20)
-        self.lon_edit = QLineEdit(self)
-        self.lon_edit.move(20, 50)
-        self.scale_edit = QLineEdit(self)
-        self.scale_edit.move(20, 80)
+    def initUI(self):
+        self.setGeometry(100, 100, *SCREEN_SIZE)
+        self.setWindowTitle('Отображение карты')
 
-        # Создаем кнопку для загрузки карты
-        self.map_button = QPushButton('Load Map', self)
-        self.map_button.move(20, 110)
-        self.map_button.clicked.connect(self.load_map)
+        self.pixmap = QPixmap(self.map_file)
+        self.image = QLabel(self)
+        self.image.move(0, 0)
+        self.image.resize(800, 450)
+        self.image.setPixmap(self.pixmap)
 
-        # Создаем метку для отображения карты
-        self.map_label = QLabel(self)
-        self.map_label.setGeometry(150, 20, 620, 560)
-
-    def load_map(self):
-        # Получаем значения координат и масштаба из полей ввода
-        lat = self.lat_edit.text()
-        lon = self.lon_edit.text()
-        scale = self.scale_edit.text()
-
-        # Формируем запрос к API Яндекс карт
-        api_key = '40d1649f-0493-4b70-98ba-98533de7710b'
-        map_type = 'map'
-        response = requests.get(
-            f'https://static-maps.yandex.ru/1.x/?ll={lon},{lat}&size=620,560&z={scale}&l={map_type}&apikey={api_key}')
-
-        # Загружаем карту в метку
-        pixmap = QPixmap()
-        pixmap.loadFromData(response.content)
-        self.map_label.setPixmap(pixmap)
+    def closeEvent(self, event):
+        os.remove(self.map_file)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    map_window = MapWindow()
-    map_window.show()
-    sys.exit(app.exec_())
+ex = Example()
+ex.show()
+sys.exit(app.exec())
