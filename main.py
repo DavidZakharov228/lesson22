@@ -31,7 +31,7 @@ def image_mars():
 def promotion_image():
     return render_template('about.html')
     return render_template('index.html')
-    return render_template('style.css')
+    return render_template('static.css')
 
 
 if __name__ == '__main__':

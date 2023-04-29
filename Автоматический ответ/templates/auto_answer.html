@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <p>Фамилия: {{ data['surname'] }}</p>
+    <p>Имя: {{ data['name'] }}</p>
+    <p>Образование: {{ data['education'] }}</p>
+    <p>Профессия: {{ data['profession'] }}</p>
+    <p>Пол: {{ data['sex'] }}</p>
+    <p>Мотивация: {{ data['motivation'] }}</p>
+    <p>Готовы остаться на Марсе?: {{ data['ready'] }}</p>
+</body>
+</html>
