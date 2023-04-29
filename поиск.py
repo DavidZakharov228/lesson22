@@ -1,52 +1,53 @@
 import sys
-from io import BytesIO
-# Этот класс поможет нам сделать картинку из потока байт
-
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
+from PyQt5.QtGui import QPixmap
 import requests
-from PIL import Image
 
-# Пусть наше приложение предполагает запуск:
-# python search.py Москва, ул. Ак. Королева, 12
-# Тогда запрос к геокодеру формируется следующим образом:
-toponym_to_find = " ".join(sys.argv[1:])
 
-geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+class MapWindow(QWidget):
+    def __init__(self):
+        super().__init__()
 
-geocoder_params = {
-    "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
-    "geocode": toponym_to_find,
-    "format": "json"}
+        self.setWindowTitle('Map App')
+        self.setGeometry(100, 100, 800, 600)
 
-response = requests.get(geocoder_api_server, params=geocoder_params)
+        # Создаем поля ввода координат и масштаба
+        self.lat_edit = QLineEdit(self)
+        self.lat_edit.move(20, 20)
+        self.lon_edit = QLineEdit(self)
+        self.lon_edit.move(20, 50)
+        self.scale_edit = QLineEdit(self)
+        self.scale_edit.move(20, 80)
 
-if not response:
-    # обработка ошибочной ситуации
-    pass
+        # Создаем кнопку для загрузки карты
+        self.map_button = QPushButton('Load Map', self)
+        self.map_button.move(20, 110)
+        self.map_button.clicked.connect(self.load_map)
 
-# Преобразуем ответ в json-объект
-json_response = response.json()
-# Получаем первый топоним из ответа геокодера.
-toponym = json_response["response"]["GeoObjectCollection"][
-    "featureMember"][0]["GeoObject"]
-# Координаты центра топонима:
-toponym_coodrinates = toponym["Point"]["pos"]
-# Долгота и широта:
-toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
+        # Создаем метку для отображения карты
+        self.map_label = QLabel(self)
+        self.map_label.setGeometry(150, 20, 620, 560)
 
-delta = "0.005"
+    def load_map(self):
+        # Получаем значения координат и масштаба из полей ввода
+        lat = self.lat_edit.text()
+        lon = self.lon_edit.text()
+        scale = self.scale_edit.text()
 
-# Собираем параметры для запроса к StaticMapsAPI:
-map_params = {
-    "ll": ",".join([toponym_longitude, toponym_lattitude]),
-    "spn": ",".join([delta, delta]),
-    "l": "map"
-}
+        # Формируем запрос к API Яндекс карт
+        api_key = '40d1649f-0493-4b70-98ba-98533de7710b'
+        map_type = 'map'
+        response = requests.get(
+            f'https://static-maps.yandex.ru/1.x/?ll={lon},{lat}&size=620,560&z={scale}&l={map_type}&apikey={api_key}')
 
-map_api_server = "http://static-maps.yandex.ru/1.x/"
-# ... и выполняем запрос
-response = requests.get(map_api_server, params=map_params)
+        # Загружаем карту в метку
+        pixmap = QPixmap()
+        pixmap.loadFromData(response.content)
+        self.map_label.setPixmap(pixmap)
 
-Image.open(BytesIO(
-    response.content)).show()
-# Создадим картинку
-# и тут же ее покажем встроенным просмотрщиком операционной системы
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    map_window = MapWindow()
+    map_window.show()
+    sys.exit(app.exec_())
