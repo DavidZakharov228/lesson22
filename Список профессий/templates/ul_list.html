@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<title>Миссия Колонизация Марса</title>
+	<style>
+		h1 {
+			margin-left: 15px;
+		}
+		h4 {
+			margin-left: 15px;
+		}
+		.right {
+			float: right;
+		}
+	</style>
+</head>
+<body>
+	<h1>Миссия Колонизация Марса</h1>
+	<div class="right">Mars One</div>
+	<h4>И на Марсе будут яблони цвести!</h4>
+	<h2 style="margin-left: 25px;">Список профессий</h2>
+</head>
+<body>
+	<ul style="margin-left: 30px;">
+	{% for profession in professions %}
+		<li>{{ profession }}</li>
+	{% endfor %}
+	</ul>
+</body>
+</html>
