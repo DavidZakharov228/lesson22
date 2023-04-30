@@ -1,19 +1,27 @@
-<!doctype html>
-    <html>
-    <head>
-        <title>Mars One</title>
-    </head>
-    <body>
-        <div style="display: flex; justify-content: space-between;">
-            <h1>Миссия Колонизация Марса</h1>
-            <p>Mars One</p>
-        </div>
-        <div style="text-align: left;">
-            <p>И на Марсе будут яблони цвести!</p>
-        </div>
-        <div style="text-align: center;">
-            <h2>Научные симуляторы</h2>
-            <img src="{{ url_for('static', filename='img/image.png') }}" alt="Image">
-        </div>
-    </body>
-    </html>
+{% extends "base.html" %}
+
+{% block title %}Тренировки{% endblock %}
+
+{% block content %}
+<h1>Миссия Колонизация Марса</h1>
+<p class="text-right">Mars One</p>
+<hr>
+
+{% if prof == "врач" %}
+<h2>Врач</h2>
+<img src="{{ url_for('static', filename='img/image.png') }}" alt="Doctor Training">
+{% elif prof == "инженер" %}
+<h2>Инженерные тренажеры</h2>
+<img src="{{ url_for('static', filename='img/image2.png') }}" alt="Engineer Training">
+{% elif prof == "строитель" %}
+<h2>Строитель</h2>
+<img src="{{ url_for('static', filename='img/image3.png') }}" alt="Builder Training">
+{% elif prof == "scientific_simulators" %}
+<h2>Научные симуляторы</h2>
+<img src="{{ url_for('static', filename='img/image4.png') }}" alt="Scientific Simulators">
+{% else %}
+<h2>Другие тренировки</h2>
+{% endif %}
+
+<p class="text-center">И на Марсе будут яблони цвести!</p>
+{% endblock %}
