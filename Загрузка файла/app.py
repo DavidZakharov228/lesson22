@@ -2,12 +2,12 @@ import vk_api
 import datetime
 import wikipedia
 import re
-from vk_api.longpoll import VkLongPoll, VkEventType
+from vk_api.longpoll import VkLongPoll, EventType
 
 # Функция для отправки сообщения пользователю
 def send_message(chat_id, message):
     vk.messages.send(
-        user_id=chat_id,
+        chat_id=chat_id,
         message=message,
         random_id=vk_api.utils.get_random_id()
     )
