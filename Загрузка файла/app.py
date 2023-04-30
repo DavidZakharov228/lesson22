@@ -2,7 +2,7 @@ import vk_api
 import datetime
 import wikipedia
 import re
-from vk_api.longpoll import VkLongPoll, EventType
+from vk_api.longpoll import VkLongPoll, VkEventType
 
 # Функция для отправки сообщения пользователю
 def send_message(chat_id, message):
@@ -47,7 +47,7 @@ long_poll = vk_api.longpoll.VkLongPoll(vk_session)
 
 # Обрабатываем новые сообщения
 for event in long_poll.listen():
-    if event.type == vk_api.longpoll.EventType.MESSAGE_NEW:
-        user_id = event.user_id
+    if event.type == vk_api.longpoll.VkEventType.MESSAGE_NEW:
+        chat_id = event.chat_id
         message = event.text
-        handle_message(user_id, message)
+        handle_message(chat_id, message)
